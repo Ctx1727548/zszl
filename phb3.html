@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>代氪商城 & 排行榜</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle, #0f172a, #000);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .glow-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      box-shadow: 0 0 15px #00f7ff55, 0 0 5px #00f7ff22;
+      border: 1px solid #00f7ff33;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .glow-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 25px #00f7ff88, 0 0 10px #00f7ff44;
+    }
+    .main-glow-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      box-shadow: 0 0 20px #00f7ff77, 0 0 10px #00f7ff44;
+      border: 2px solid #00f7ff55;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .main-glow-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 30px #00f7ff99, 0 0 15px #00f7ff66;
+    }
+    .title {
+      text-shadow: 0 0 10px #00f7ff, 0 0 20px #00f7ff;
+    }
+    .main-title {
+      text-shadow: 0 0 15px #00f7ff, 0 0 30px #00f7ff, 0 0 45px #00f7ff;
+      font-size: 3.5rem;
+    }
+    .category-title {
+      background: linear-gradient(90deg, #00f7ff, #0ea5e9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2.5rem;
+    }
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .secondary-section {
+      opacity: 0.85;
+    }
+    .main-section-border {
+      border: 3px solid #00f7ff44;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      background: linear-gradient(145deg, #1a2332, #0f1419);
+      box-shadow: 0 0 25px #00f7ff33;
+    }
+    
+    /* 排名图标样式 */
+    .rank-crown {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 8px #ffd700);
+      animation: pulse-crown 2s infinite;
+    }
+    
+    .rank-medal {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 6px #c0c0c0);
+      animation: pulse-medal 2s infinite;
+    }
+    
+    @keyframes pulse-crown {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    @keyframes pulse-medal {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .first-place {
+      background: linear-gradient(145deg, #2d1b0e, #1a0f08);
+      border: 2px solid #ffd70055;
+      box-shadow: 0 0 20px #ffd70044;
+    }
+    
+    .second-place {
+      background: linear-gradient(145deg, #1f1f23, #131316);
+      border: 2px solid #c0c0c055;
+      box-shadow: 0 0 20px #c0c0c044;
+    }
+
+    /* 搜索框样式 */
+    .search-box {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 2px solid #00f7ff44;
+      box-shadow: 0 0 15px #00f7ff33;
+      transition: all 0.3s ease;
+    }
+    
+    .search-box:focus {
+      outline: none;
+      border-color: #00f7ff88;
+      box-shadow: 0 0 25px #00f7ff55;
+    }
+
+    .search-result {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 2px solid #00f7ff66;
+      box-shadow: 0 0 20px #00f7ff44;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .no-result {
+      background: linear-gradient(145deg, #2d1b1b, #1a0f0f);
+      border: 2px solid #ff444455;
+      box-shadow: 0 0 15px #ff444433;
+    }
+
+    /* 紧凑样式优化 */
+    .compact-card {
+      padding: 0.75rem;
+    }
+    
+    .compact-title {
+      font-size: 1.125rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .compact-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .compact-item {
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* 购买按钮样式 */
+    .buy-button {
+      background: linear-gradient(145deg, #059669, #047857);
+      border: 2px solid #10b981;
+      box-shadow: 0 0 15px #10b98144;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      min-width: 70px;
+    }
+
+    .buy-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px #10b98166;
+      background: linear-gradient(145deg, #10b981, #059669);
+    }
+
+    .buy-button:active {
+      transform: translateY(0);
+    }
+
+    /* 商品信息区域 */
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* 隐藏按钮样式 */
+    .privacy-button {
+      background: linear-gradient(145deg, #e11d48, #be123c);
+      border: 2px solid #f43f5e;
+      box-shadow: 0 0 15px #f43f5e44;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+      min-width: 140px;
+    }
+
+    .privacy-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px #f43f5e66;
+      background: linear-gradient(145deg, #f43f5e, #e11d48);
+    }
+
+    .privacy-button.active {
+      background: linear-gradient(145deg, #059669, #047857);
+      border-color: #10b981;
+      box-shadow: 0 0 15px #10b98144;
+    }
+
+    .privacy-button.active:hover {
+      box-shadow: 0 0 25px #10b98166;
+      background: linear-gradient(145deg, #10b981, #059669);
+    }
+
+    /* 神秘人效果 */
+    .mystery-name {
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #d946ef);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer-text 2s ease-in-out infinite;
+    }
+
+    @keyframes shimmer-text {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* 广告浮窗样式 */
+    .ad-floating {
+      background: linear-gradient(145deg, #2d1520, #1a0e14);
+      border: 3px solid #ff6b9d66;
+      box-shadow: 
+        0 0 25px #ff6b9d44,
+        0 0 50px #ff6b9d22,
+        inset 0 0 15px #ff6b9d11;
+      position: relative;
+      overflow: hidden;
+      animation: float-glow 3s ease-in-out infinite;
+    }
+
+    .ad-floating::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, #ff6b9d22, transparent);
+      animation: shimmer 4s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float-glow {
+      0%, 100% { 
+        transform: translateY(0);
+        box-shadow: 
+          0 0 25px #ff6b9d44,
+          0 0 50px #ff6b9d22,
+          inset 0 0 15px #ff6b9d11;
+      }
+      50% { 
+        transform: translateY(-3px);
+        box-shadow: 
+          0 5px 30px #ff6b9d55,
+          0 10px 60px #ff6b9d33,
+          inset 0 0 20px #ff6b9d15;
+      }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .ad-icon {
+      animation: bounce-icon 2s infinite;
+      filter: drop-shadow(0 0 8px #ffd700);
+    }
+
+    @keyframes bounce-icon {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.1) rotate(-5deg); }
+      75% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .ad-text-glow {
+      text-shadow: 0 0 10px #ff6b9d, 0 0 20px #ff6b9d88;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 640px) {
+      .compact-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .buy-button {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      
+      .main-title {
+        font-size: 2.5rem;
+      }
+      
+      .category-title {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body class="text-white py-8 px-4">
+
+  <div class="max-w-7xl mx-auto">
+    <h1 class="main-title font-bold text-center mb-8 text-cyan-400 title">⚡ xL代氪商城中心 ⚡</h1>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+      
+      <!-- 商城中心 - 紧凑版 -->
+      <div class="w-full lg:w-3/4">
+        <div class="main-section-border">
+          <h2 class="category-title font-bold mb-6 text-center">🛒 商城中心</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- 代氪服务 -->
+            <div class="compact-section">
+              <h3 class="compact-title font-bold text-emerald-300 border-b border-emerald-300 pb-1">💳 代氪服务</h3>
+              <div class="space-y-2">
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-emerald-400 font-semibold">接代氪2.5倍返点券</div>
+                    <div class="text-xs text-gray-400">高倍率返点</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('代氪2.5倍返点券')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-emerald-400 font-semibold">限时返厂</div>
+                    <div class="text-xs text-gray-400">特殊服务</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('限时返厂')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-emerald-400 font-semibold">50代氪出红币</div>
+                    <div class="text-xs text-gray-400">50额度兑换</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('50代氪出红币')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-emerald-400 font-semibold">代氪/dq出副本材料</div>
+                    <div class="text-xs text-gray-400">副本服务</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('代氪/dq出副本材料')">🛒 购买</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 游戏物品 -->
+            <div class="compact-section">
+              <h3 class="compact-title font-bold text-purple-300 border-b border-purple-300 pb-1">⛏️ 游戏物品</h3>
+              <div class="space-y-2">
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-purple-400 font-semibold">新手必备 黑白矿</div>
+                    <div class="text-xs text-gray-400">新手推荐</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('新手必备 黑白矿')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-red-400 font-semibold">💣 5r一组暗红晶体</div>
+                    <div class="text-xs text-gray-400">5元/组</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('5r一组暗红晶体')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-pink-400 font-semibold">💣 10r一组粉红晶体</div>
+                    <div class="text-xs text-gray-400">10元/组</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('10r一组粉红晶体')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-orange-400 font-semibold">💣 500代氪出私矿</div>
+                    <div class="text-xs text-gray-400">500额度</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('500代氪出私矿')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-yellow-400 font-semibold">🍌 175出决绝镐(5倍)</div>
+                    <div class="text-xs text-gray-400">175元</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('175出决绝镐(5倍)')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-blue-400 font-semibold">💰 5r/150w出以太</div>
+                    <div class="text-xs text-gray-400">5元或150万</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('5r/150w出以太')">🛒 购买</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 强化服务 -->
+            <div class="compact-section">
+              <h3 class="compact-title font-bold text-yellow-300 border-b border-yellow-300 pb-1">⚡ 强化服务</h3>
+              <div class="space-y-2">
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-yellow-300 font-semibold">⚡ 570出+21</div>
+                    <div class="text-xs text-gray-400">最高级强化</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('570出+21')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-yellow-300 font-semibold">⚡ 420出+20</div>
+                    <div class="text-xs text-gray-400">高级强化</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('420出+20')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-yellow-300 font-semibold">⚡ 270出+19</div>
+                    <div class="text-xs text-gray-400">中高级强化</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('270出+19')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-yellow-300 font-semibold">⚡ 120出+18</div>
+                    <div class="text-xs text-gray-400">中级强化</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('120出+18')">🛒 购买</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-yellow-300 font-semibold">⚡ 80出+17</div>
+                    <div class="text-xs text-gray-400">基础强化</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('80出+17')">🛒 购买</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 收购服务 -->
+            <div class="compact-section">
+              <h3 class="compact-title font-bold text-green-300 border-b border-green-300 pb-1">🍎 收购服务</h3>
+              <div class="space-y-2">
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-green-400 font-semibold">🍎 dp/代氪包星星卡精炼</div>
+                    <div class="text-xs text-gray-400">全部材料</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('dp/代氪包星星卡精炼')">🛒 出售</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-green-400 font-semibold">🍎 32w以太收L1L2</div>
+                    <div class="text-xs text-gray-400">32万以太</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('32w以太收L1L2')">🛒 出售</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-green-400 font-semibold">🍎 5w或者矿收4倍书</div>
+                    <div class="text-xs text-gray-400">5万或矿物</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('5w或者矿收4倍书')">🛒 出售</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-green-400 font-semibold">🍎 20w/12黑/6白收钻</div>
+                    <div class="text-xs text-gray-400">多种收购方式</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('20w/12黑/6白收钻')">🛒 出售</button>
+                </div>
+                <div class="main-glow-card compact-item rounded">
+                  <div class="item-info">
+                    <div class="text-green-400 font-semibold">🍎 80w收盒装鸡鸭</div>
+                    <div class="text-xs text-gray-400">80万收购</div>
+                  </div>
+                  <button class="buy-button" onclick="purchaseItem('80w收盒装鸡鸭')">🛒 出售</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 排行榜和搜索功能 -->
+      <div class="w-full lg:w-1/4 secondary-section">
+        
+<!-- 广告浮窗 -->
+<div class="ad-floating p-4 rounded-xl mb-6 relative">
+  <div class="relative z-10">
+    <div class="flex items-center justify-center mb-3">
+      <div class="ad-icon text-2xl mr-2">🎁</div>
+      <div class="ad-text-glow text-lg font-bold text-pink-300">奖励公告</div>
+    </div>
+    <div class="text-center mb-3">
+      <div class="text-yellow-300 font-semibold text-sm mb-1">📅 每两周结算一次（8.10进行第一次结算哦）</div>
+      <div class="text-pink-200 font-semibold text-sm">🏆 累代氪前五有额外奖励哦</div>
+    </div>
+    
+    <!-- 详细奖励内容 -->
+    <div class="bg-black bg-opacity-40 rounded-lg p-3 mb-3">
+      <div class="text-center text-cyan-300 font-bold text-sm mb-2">🎖️ 前五名奖励详情</div>
+      <div class="space-y-1 text-xs">
+        <div class="flex justify-between items-center">
+          <span class="text-yellow-300 font-semibold">👑 第1名：</span>
+          <span class="text-yellow-200">一张+20 + 返10%点券</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-300 font-semibold">🥈 第2名：</span>
+          <span class="text-gray-200">一张+19 + 返5%点券</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-amber-400 font-semibold">🥉 第3名：</span>
+          <span class="text-amber-200">一张+18 + 一张+17</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-blue-300 font-semibold">🏅 第4名：</span>
+          <span class="text-blue-200">两张+17</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-green-300 font-semibold">🎯 第5名：</span>
+          <span class="text-green-200">一张+17</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-center">
+      <div class="text-xs text-gray-300 bg-black bg-opacity-30 px-2 py-1 rounded">
+        💰 丰厚奖品等你来拿
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        <div class="mb-6">
+          <h2 class="text-2xl font-semibold mb-4 text-gray-300">🏆 累代氪排行榜（前十）</h2>
+          
+          <!-- 隐私保护按钮 -->
+          <button id="privacyToggle" class="privacy-button w-full" onclick="togglePrivacy()">
+            <span id="privacyIcon">🕵️</span>
+            <span id="privacyText">隐藏ID模式</span>
+          </button>
+          
+          <!-- 搜索框 -->
+          <div class="mb-6">
+            <input 
+              type="text" 
+              id="searchInput" 
+              placeholder="🔍 搜索玩家昵称..." 
+              class="search-box w-full p-3 rounded-lg text-white placeholder-gray-400"
+              onkeyup="searchPlayer()"
+            />
+            <div id="searchDisabledHint" class="text-xs text-red-400 mt-1 hidden">
+              💡 隐藏模式下无法搜索玩家
+            </div>
+          </div>
+
+          <!-- 搜索结果显示区域 -->
+          <div id="searchResult" class="mb-4 hidden"></div>
+        </div>
+
+        <!-- 前十名排行榜 -->
+        <div id="topRanking" class="flex flex-col gap-3">
+          <!-- 排行榜会通过JavaScript动态生成 -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // 完整的用户数据库
+    const originalUsers = [
+		 { name: "mc1125", amount: 120 },
+		 { name: "7842895", amount: 130 },
+		 { name: "MC_kongshen", amount: 5 },
+		{ name: "HO_XIANCHEN", amount: 5 },
+		{ name: "DBC", amount: 50 },
+		{ name: "Sugeen", amount: 5 }
+		
+    ];
+
+    // 排序后的用户数据（默认降序）
+    let sortedUsers = [];
+    
+    // 隐私模式状态
+    let isPrivacyMode = false;
+
+    // 根据amount降序排序用户
+    function sortUsersByAmount() {
+      const users = [...originalUsers];
+      
+      // 降序排序
+      users.sort((a, b) => b.amount - a.amount);
+      
+      // 重新分配排名和特殊属性
+      return users.map((user, index) => {
+        const rank = index + 1;
+        let icon, special = '';
+        
+        if (rank === 1) {
+          icon = '👑';
+          special = 'first-place';
+        } else if (rank === 2) {
+          icon = '🥈';
+          special = 'second-place';
+        } else if (rank === 3) {
+          icon = '🥉';
+          special = '';
+        } else {
+          icon = `#${rank}`;
+          special = '';
+        }
+        
+        return {
+          ...user,
+          rank,
+          icon,
+          special
+        };
+      });
+    }
+
+    // 切换隐私模式
+    function togglePrivacy() {
+      isPrivacyMode = !isPrivacyMode;
+      
+      const button = document.getElementById('privacyToggle');
+      const icon = document.getElementById('privacyIcon');
+      const text = document.getElementById('privacyText');
+      const searchInput = document.getElementById('searchInput');
+      const searchHint = document.getElementById('searchDisabledHint');
+      
+      if (isPrivacyMode) {
+        // 切换到隐藏模式
+        button.classList.add('active');
+        icon.textContent = '👁️';
+        text.textContent = '显示ID模式';
+        
+        // 禁用搜索功能
+        searchInput.disabled = true;
+        searchInput.placeholder = '🔒 隐藏模式下无法搜索';
+        searchInput.value = '';
+        searchHint.classList.remove('hidden');
+        
+        // 清除搜索结果
+        document.getElementById('searchResult').classList.add('hidden');
+        
+      } else {
+        // 切换到显示模式
+        button.classList.remove('active');
+        icon.textContent = '🕵️';
+        text.textContent = '隐藏ID模式';
+        
+        // 启用搜索功能
+        searchInput.disabled = false;
+        searchInput.placeholder = '🔍 搜索玩家昵称...';
+        searchHint.classList.add('hidden');
+      }
+      
+      // 更新排行榜显示
+      initializeTopRanking();
+    }
+
+    // 购买功能
+    function purchaseItem(itemName) {
+      const confirmed = confirm(`确认要购买/出售 "${itemName}" 吗？\n\n请确认您已了解相关价格和服务内容。`);
+      
+      if (confirmed) {
+        alert(`✅ 购买成功！\n\n商品：${itemName}\n\n请联系客服获取具体交易详情。`);
+      }
+    }
+
+    // 生成排行榜项目的HTML
+    function createRankItem(user, isSearchResult = false) {
+      const specialClass = user.special ? user.special : 'glow-card';
+      const iconClass = user.special === 'first-place' ? 'rank-crown' : 
+                       user.special === 'second-place' ? 'rank-medal' : '';
+      const textColor = user.rank <= 3 ? getRankColor(user.rank) : 'text-cyan-300';
+      
+      // 根据隐私模式决定显示内容
+      let displayName, nameClass;
+      
+      if (isPrivacyMode) {
+        displayName = '神秘人';
+        nameClass = 'mystery-name font-bold';
+      } else {
+        displayName = user.name;
+        nameClass = user.special === 'first-place' ? 'text-yellow-300' : 
+                   user.special === 'second-place' ? 'text-gray-200' : 'text-base font-semibold';
+      }
+
+      // 金额始终显示真实数值
+      const displayAmount = `${user.amount} 元`;
+
+      return `
+        <div class="${specialClass} ${isSearchResult ? 'search-result' : ''} p-4 rounded-lg rank-item">
+          <div class="flex items-center gap-3">
+            <div class="${iconClass} ${user.rank > 3 ? 'text-gray-400 text-lg font-bold' : 'text-xl font-bold'}">${user.icon}</div>
+            <div class="${nameClass}">${displayName}</div>
+          </div>
+          <div class="${textColor} font-bold ${user.rank <= 2 ? 'text-lg' : ''}">${displayAmount}</div>
+        </div>
+      `;
+    }
+
+    // 获取排名对应的颜色
+    function getRankColor(rank) {
+      switch(rank) {
+        case 1: return 'text-yellow-400';
+        case 2: return 'text-gray-300';
+        case 3: return 'text-amber-500';
+        default: return 'text-cyan-300';
+      }
+    }
+
+    // 初始化前十名排行榜
+    function initializeTopRanking() {
+      const topRankingDiv = document.getElementById('topRanking');
+      const top10 = sortedUsers.slice(0, 10);
+      
+      topRankingDiv.innerHTML = top10.map(user => createRankItem(user)).join('');
+    }
+
+    // 搜索功能
+    function searchPlayer() {
+      // 如果是隐私模式，不执行搜索
+      if (isPrivacyMode) {
+        return;
+      }
+      
+      const searchInput = document.getElementById('searchInput');
+      const searchResult = document.getElementById('searchResult');
+      const query = searchInput.value.trim().toLowerCase();
+
+      if (query === '') {
+        searchResult.classList.add('hidden');
+        return;
+      }
+
+      // 搜索匹配的用户（从排序后的数据中搜索）
+      const matchedUsers = sortedUsers.filter(user => 
+        user.name.toLowerCase().includes(query)
+      );
+
+      if (matchedUsers.length > 0) {
+        searchResult.classList.remove('hidden');
+        searchResult.innerHTML = `
+          <div class="mb-3">
+            <h3 class="text-lg font-semibold text-cyan-300 mb-2">🔍 搜索结果 (${matchedUsers.length})</h3>
+            <div class="space-y-2">
+              ${matchedUsers.map(user => createRankItem(user, true)).join('')}
+            </div>
+          </div>
+        `;
+      } else {
+        searchResult.classList.remove('hidden');
+        searchResult.innerHTML = `
+          <div class="no-result p-4 rounded-lg text-center">
+            <div class="text-red-400 font-semibold">❌ 未找到匹配的玩家</div>
+            <div class="text-sm text-gray-400 mt-1">请检查输入的昵称是否正确</div>
+          </div>
+        `;
+      }
+    }
+
+    // 页面加载时初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化排序（默认降序）
+      sortedUsers = sortUsersByAmount();
+      initializeTopRanking();
+      
+      // 为搜索框添加回车键支持
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          searchPlayer();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
