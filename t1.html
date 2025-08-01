@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚡ xL&zzz专业代氪服务官网 - 轮播版 ⚡</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: 
+        radial-gradient(circle at 15% 25%, #0f172a 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, #1e1b4b 0%, transparent 45%),
+        radial-gradient(circle at 45% 15%, #134e4a 0%, transparent 35%),
+        radial-gradient(circle at 55% 85%, #581c87 0%, transparent 35%),
+        linear-gradient(135deg, #000000 0%, #0a0a0a 25%, #0f172a 50%, #000000 100%);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* 动态背景效果 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(90deg, transparent 98%, rgba(0, 247, 255, 0.02) 100%),
+        linear-gradient(0deg, transparent 98%, rgba(0, 247, 255, 0.02) 100%);
+      background-size: 80px 80px;
+      animation: grid-move 20s linear infinite;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(80px, 80px); }
+    }
+
+    /* 轮播容器 - 修复高度问题 */
+    .mega-carousel {
+      position: relative;
+      width: 100%;
+      /* 计算高度：100vh减去导航栏高度 */
+      height: calc(100vh - 80px);
+      margin-top: 80px; /* 给导航栏留出空间 */
+      overflow: hidden;
+      border-radius: 0;
+    }
+
+    .carousel-container {
+      display: flex;
+      width: 500%;
+      height: 100%;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+    }
+
+    .carousel-slide {
+      width: 20%;
+      height: 100%;
+      flex-shrink: 0;
+      position: relative;
+      /* 调整padding确保内容不被遮挡 */
+      padding: 2rem 2rem 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* 改为从顶部开始 */
+      align-items: center;
+      overflow-y: auto; /* 允许滚动 */
+    }
+
+    /* 轮播导航按钮 */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      background: linear-gradient(135deg, 
+        rgba(0, 247, 255, 0.9), 
+        rgba(99, 102, 241, 0.8)
+      );
+      border: 2px solid rgba(0, 247, 255, 0.6);
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(20px);
+      box-shadow: 
+        0 8px 25px rgba(0, 247, 255, 0.3),
+        0 0 40px rgba(0, 247, 255, 0.2);
+    }
+
+    .carousel-nav:hover {
+      transform: translateY(-50%) scale(1.15);
+      background: linear-gradient(135deg, 
+        rgba(0, 247, 255, 1), 
+        rgba(99, 102, 241, 0.9)
+      );
+      box-shadow: 
+        0 12px 35px rgba(0, 247, 255, 0.4),
+        0 0 60px rgba(0, 247, 255, 0.3);
+    }
+
+    .carousel-nav.prev {
+      left: 30px;
+    }
+
+    .carousel-nav.next {
+      right: 30px;
+    }
+
+    .carousel-nav-icon {
+      font-size: 1.8rem;
+      color: white;
+      font-weight: 900;
+    }
+
+    /* 轮播指示器 */
+    .carousel-indicators {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 1000;
+    }
+
+    .carousel-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(0, 247, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .carousel-indicator.active {
+      background: linear-gradient(135deg, #00f7ff, #6366f1);
+      transform: scale(1.3);
+      box-shadow: 
+        0 4px 15px rgba(0, 247, 255, 0.5),
+        0 0 25px rgba(0, 247, 255, 0.3);
+    }
+
+    .carousel-indicator:hover {
+      background: rgba(0, 247, 255, 0.7);
+      transform: scale(1.2);
+    }
+
+    /* 超级炫酷主标题 */
+    .mega-title {
+      background: linear-gradient(135deg, 
+        #00f7ff 0%, 
+        #0ea5e9 25%, 
+        #3b82f6 50%, 
+        #6366f1 75%, 
+        #8b5cf6 100%
+      );
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      text-align: center;
+      animation: mega-title-flow 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(0, 247, 255, 0.5));
+      letter-spacing: 0.02em;
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes mega-title-flow {
+      0%, 100% { 
+        background-position: 0% 50%; 
+        transform: scale(1);
+        filter: drop-shadow(0 0 20px rgba(0, 247, 255, 0.5));
+      }
+      50% { 
+        background-position: 100% 50%; 
+        transform: scale(1.02);
+        filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.6));
+      }
+    }
+
+    /* 导航栏 - 固定高度 */
+    .mega-nav {
+      background: linear-gradient(135deg, 
+        rgba(30, 41, 59, 0.95) 0%,
+        rgba(15, 23, 42, 0.98) 100%
+      );
+      backdrop-filter: blur(20px);
+      border: 2px solid;
+      border-image: linear-gradient(90deg, 
+        rgba(0, 247, 255, 0.5), 
+        rgba(99, 102, 241, 0.3), 
+        rgba(0, 247, 255, 0.5)
+      ) 1;
+      box-shadow: 
+        0 8px 32px rgba(0, 247, 255, 0.15),
+        0 0 60px rgba(0, 247, 255, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2000;
+      height: 80px; /* 固定导航栏高度 */
+    }
+
+    .nav-link {
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0, 247, 255, 0.2), 
+        transparent
+      );
+      transition: left 0.5s;
+    }
+
+    .nav-link:hover::before {
+      left: 100%;
+    }
+
+    .nav-link:hover {
+      background: linear-gradient(135deg, 
+        rgba(0, 247, 255, 0.1), 
+        rgba(99, 102, 241, 0.1)
+      );
+      transform: translateY(-2px);
+      text-shadow: 0 0 8px rgba(0, 247, 255, 0.5);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(135deg, 
+        rgba(0, 247, 255, 0.2), 
+        rgba(99, 102, 241, 0.2)
+      );
+      color: #00f7ff;
+      text-shadow: 0 0 10px rgba(0, 247, 255, 0.7);
+    }
+
+    /* 终极卡片样式 */
+    .ultimate-card {
+      background: linear-gradient(145deg, 
+        rgba(30, 41, 59, 0.95) 0%,
+        rgba(15, 23, 42, 0.98) 50%,
+        rgba(30, 41, 59, 0.95) 100%
+      );
+      backdrop-filter: blur(20px);
+      border: 2px solid;
+      border-image: linear-gradient(135deg, 
+        rgba(0, 247, 255, 0.5), 
+        rgba(99, 102, 241, 0.3), 
+        rgba(139, 92, 246, 0.5)
+      ) 1;
+      border-radius: 24px;
+      box-shadow: 
+        0 8px 32px rgba(0, 247, 255, 0.15),
+        0 0 60px rgba(0, 247, 255, 0.1),
+        inset 0 2px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      margin-bottom: 1.5rem;
+    }
+
+    .ultimate-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, 
+        rgba(0, 247, 255, 0.3), 
+        rgba(99, 102, 241, 0.2), 
+        rgba(139, 92, 246, 0.3),
+        rgba(0, 247, 255, 0.3)
+      );
+      background-size: 400% 400%;
+      border-radius: 24px;
+      z-index: -1;
+      animation: ultimate-border 3s ease-in-out infinite;
+    }
+
+    @keyframes ultimate-border {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .ultimate-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 16px 40px rgba(0, 247, 255, 0.25),
+        0 0 80px rgba(99, 102, 241, 0.15),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* 价格保护超级特效卡片 */
+    .price-protection-mega-card {
+      background: linear-gradient(145deg, 
+        rgba(16, 185, 129, 0.15) 0%,
+        rgba(5, 150, 105, 0.12) 50%,
+        rgba(4, 120, 87, 0.15) 100%
+      );
+      border: 3px solid;
+      border-image: linear-gradient(135deg, 
+        rgba(52, 211, 153, 0.8), 
+        rgba(16, 185, 129, 0.6), 
+        rgba(5, 150, 105, 0.8)
+      ) 1;
+      border-radius: 28px;
+      box-shadow: 
+        0 15px 50px rgba(52, 211, 153, 0.3),
+        0 0 100px rgba(16, 185, 129, 0.2),
+        inset 0 3px 0 rgba(255, 255, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+      animation: price-protection-mega-pulse 4s ease-in-out infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes price-protection-mega-pulse {
+      0%, 100% { 
+        transform: scale(1);
+        border-image: linear-gradient(135deg, 
+          rgba(52, 211, 153, 0.8), 
+          rgba(16, 185, 129, 0.6), 
+          rgba(5, 150, 105, 0.8)
+        ) 1;
+      }
+      50% { 
+        transform: scale(1.02);
+        border-image: linear-gradient(135deg, 
+          rgba(255, 215, 0, 0.8), 
+          rgba(255, 193, 7, 0.6), 
+          rgba(255, 215, 0, 0.8)
+        ) 1;
+      }
+    }
+
+    /* 价格保护图标动画 */
+    .price-protection-mega-icon {
+      font-size: 4rem;
+      animation: price-protection-mega-bounce 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 25px #10b981) drop-shadow(0 0 50px #34d399);
+      display: inline-block;
+    }
+
+    @keyframes price-protection-mega-bounce {
+      0%, 100% { 
+        transform: scale(1) rotate(0deg); 
+        filter: drop-shadow(0 0 25px #10b981) drop-shadow(0 0 50px #34d399);
+      }
+      50% { 
+        transform: scale(1.3) rotate(0deg); 
+        filter: drop-shadow(0 0 40px #10b981) drop-shadow(0 0 80px #34d399);
+      }
+    }
+
+    /* 服务卡片特殊效果 */
+    .service-card {
+      background: linear-gradient(145deg, 
+        rgba(30, 41, 59, 0.9) 0%,
+        rgba(15, 23, 42, 0.95) 100%
+      );
+      border: 2px solid rgba(34, 197, 94, 0.4);
+      border-radius: 20px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card:hover {
+      transform: translateY(-10px) scale(1.03);
+      border-color: rgba(34, 197, 94, 0.6);
+      box-shadow: 
+        0 15px 40px rgba(34, 197, 94, 0.2),
+        0 0 60px rgba(34, 197, 94, 0.1);
+    }
+
+    /* 价格卡片 */
+    .price-card {
+      background: linear-gradient(145deg, 
+        rgba(45, 21, 32, 0.9) 0%,
+        rgba(26, 14, 20, 0.95) 100%
+      );
+      border: 2px solid rgba(255, 107, 157, 0.5);
+      border-radius: 20px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-card.featured {
+      border: 3px solid rgba(255, 215, 0, 0.6);
+      transform: scale(1.05);
+      box-shadow: 
+        0 15px 40px rgba(255, 215, 0, 0.3),
+        0 0 80px rgba(255, 215, 0, 0.2);
+    }
+
+    .price-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 
+        0 20px 50px rgba(255, 107, 157, 0.3),
+        0 0 80px rgba(255, 107, 157, 0.2);
+    }
+
+    /* 按钮样式 */
+    .mega-button {
+      background: linear-gradient(135deg, #10b981, #059669, #047857);
+      border: 2px solid #34d399;
+      border-radius: 16px;
+      color: white;
+      font-weight: 700;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 
+        0 8px 25px rgba(52, 211, 153, 0.3),
+        0 0 40px rgba(52, 211, 153, 0.15),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .mega-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 
+        0 12px 35px rgba(52, 211, 153, 0.4),
+        0 0 60px rgba(52, 211, 153, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, #34d399, #10b981, #059669);
+    }
+
+    .mega-button.danger {
+      background: linear-gradient(135deg, #e11d48, #be123c, #9f1239);
+      border-color: #f43f5e;
+      box-shadow: 
+        0 8px 25px rgba(244, 63, 94, 0.3),
+        0 0 40px rgba(244, 63, 94, 0.15),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .mega-button.danger:hover {
+      background: linear-gradient(135deg, #f43f5e, #e11d48, #be123c);
+      box-shadow: 
+        0 12px 35px rgba(244, 63, 94, 0.4),
+        0 0 60px rgba(244, 63, 94, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    /* 章节标题 */
+    .section-title {
+      background: linear-gradient(90deg, 
+        #00f7ff 0%, 
+        #0ea5e9 25%, 
+        #6366f1 50%, 
+        #8b5cf6 75%, 
+        #d946ef 100%
+      );
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      text-align: center;
+      animation: section-title-flow 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 15px rgba(0, 247, 255, 0.4));
+      margin-bottom: 2rem;
+    }
+
+    @keyframes section-title-flow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* 图标动画 */
+    .service-icon {
+      font-size: 3rem;
+      animation: icon-bounce 3s ease-in-out infinite;
+      display: inline-block;
+      filter: drop-shadow(0 0 15px currentColor);
+    }
+
+    @keyframes icon-bounce {
+      0%, 100% { 
+        transform: scale(1) rotate(0deg); 
+      }
+      25% { 
+        transform: scale(1.1) rotate(-5deg); 
+      }
+      75% { 
+        transform: scale(1.1) rotate(5deg); 
+      }
+    }
+
+    /* 特色标签 */
+    .feature-badge {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #000;
+      font-weight: 800;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 
+        0 4px 15px rgba(255, 215, 0, 0.4),
+        0 0 25px rgba(255, 215, 0, 0.2);
+      animation: badge-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes badge-glow {
+      0%, 100% { 
+        box-shadow: 
+          0 4px 15px rgba(255, 215, 0, 0.4),
+          0 0 25px rgba(255, 215, 0, 0.2);
+      }
+      50% { 
+        box-shadow: 
+          0 6px 20px rgba(255, 215, 0, 0.6),
+          0 0 35px rgba(255, 215, 0, 0.3);
+      }
+    }
+
+    /* 流程步骤 */
+    .step-card {
+      background: linear-gradient(135deg, 
+        rgba(99, 102, 241, 0.1) 0%,
+        rgba(139, 92, 246, 0.08) 100%
+      );
+      border: 2px solid rgba(99, 102, 241, 0.4);
+      border-radius: 20px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .step-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 
+        0 10px 30px rgba(99, 102, 241, 0.2),
+        0 0 50px rgba(99, 102, 241, 0.1);
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.25rem;
+      color: white;
+      box-shadow: 
+        0 4px 15px rgba(99, 102, 241, 0.3),
+        0 0 25px rgba(99, 102, 241, 0.2);
+    }
+
+    /* 超级价格保护徽章 */
+    .price-protection-badge {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      font-weight: 900;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      box-shadow: 
+        0 6px 20px rgba(16, 185, 129, 0.4),
+        0 0 30px rgba(16, 185, 129, 0.3);
+      animation: protection-badge-mega-glow 3s ease-in-out infinite;
+      border: 2px solid rgba(52, 211, 153, 0.6);
+    }
+
+    @keyframes protection-badge-mega-glow {
+      0%, 100% { 
+        box-shadow: 
+          0 6px 20px rgba(16, 185, 129, 0.4),
+          0 0 30px rgba(16, 185, 129, 0.3);
+      }
+      50% { 
+        box-shadow: 
+          0 8px 25px rgba(16, 185, 129, 0.6),
+          0 0 45px rgba(16, 185, 129, 0.5);
+      }
+    }
+
+    /* 联系卡片特殊效果 */
+    .contact-card {
+      background: linear-gradient(145deg, 
+        rgba(20, 83, 45, 0.9) 0%,
+        rgba(15, 23, 42, 0.95) 100%
+      );
+      border: 2px solid rgba(34, 197, 94, 0.5);
+      box-shadow: 
+        0 8px 25px rgba(34, 197, 94, 0.2),
+        0 0 50px rgba(34, 197, 94, 0.1);
+    }
+
+    /* 内容区域调整 */
+    .slide-content {
+      width: 100%;
+      max-width: 6xl;
+      margin: 0 auto;
+      padding-top: 1rem; /* 额外的顶部间距 */
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1024px) {
+      .mega-title {
+        font-size: 2.5rem;
+      }
+      
+      .carousel-nav {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .carousel-nav.prev {
+        left: 20px;
+      }
+      
+      .carousel-nav.next {
+        right: 20px;
+      }
+      
+      .mega-carousel {
+        height: calc(100vh - 70px);
+        margin-top: 70px;
+      }
+      
+      .mega-nav {
+        height: 70px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mega-title {
+        font-size: 2rem;
+      }
+      
+      .section-title {
+        font-size: 1.8rem;
+      }
+      
+      .carousel-slide {
+        padding: 1rem 1rem 2rem 1rem;
+      }
+      
+      .carousel-nav {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .carousel-nav.prev {
+        left: 15px;
+      }
+      
+      .carousel-nav.next {
+        right: 15px;
+      }
+      
+      .mega-carousel {
+        height: calc(100vh - 60px);
+        margin-top: 60px;
+      }
+      
+      .mega-nav {
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .mega-title {
+        font-size: 1.8rem;
+      }
+      
+      .section-title {
+        font-size: 1.5rem;
+      }
+      
+      .carousel-nav {
+        width: 45px;
+        height: 45px;
+      }
+      
+      .carousel-nav-icon {
+        font-size: 1.4rem;
+      }
+      
+      .carousel-slide {
+        padding: 0.8rem 0.8rem 1.5rem 0.8rem;
+      }
+    }
+
+    /* 加载动画 */
+    @keyframes mega-fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.9);
+        filter: blur(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .mega-fade-in {
+      animation: mega-fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* 滚动条美化 */
+    .carousel-slide::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .carousel-slide::-webkit-scrollbar-track {
+      background: linear-gradient(135deg, 
+        rgba(15, 23, 42, 0.8), 
+        rgba(30, 41, 59, 0.6)
+      );
+      border-radius: 4px;
+    }
+
+    .carousel-slide::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, 
+        #00f7ff, 
+        #6366f1, 
+        #8b5cf6
+      );
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+    }
+
+    /* 文字发光效果 */
+    .text-glow {
+      text-shadow: 0 0 8px currentColor;
+    }
+
+    .text-mega-glow {
+      text-shadow: 
+        0 0 10px currentColor, 
+        0 0 20px currentColor, 
+        0 0 30px currentColor;
+    }
+
+    /* 平滑滚动 */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* 轮播进入动画 */
+    .carousel-slide.active {
+      animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* 确保卡片网格在小屏幕上正确显示 */
+    .responsive-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 768px) {
+      .responsive-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .responsive-grid.lg-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .responsive-grid.lg-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="mega-nav">
+    <div class="max-w-7xl mx-auto px-4 h-full">
+      <div class="flex items-center justify-between h-full">
+        <div class="text-xl font-bold text-cyan-400 text-glow">⚡ xL&zzz代氪</div>
+        <div class="hidden md:flex space-x-2">
+          <a href="#" class="nav-link active" data-slide="0">首页</a>
+          <a href="#" class="nav-link" data-slide="1">服务</a>
+          <a href="#" class="nav-link" data-slide="2">价格</a>
+          <a href="#" class="nav-link" data-slide="3">流程</a>
+          <a href="#" class="nav-link" data-slide="4">联系</a>
+        </div>
+        <a href="#" class="mega-button" data-slide="4">立即咨询</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 轮播容器 -->
+  <div class="mega-carousel">
+    <div class="carousel-container" id="carouselContainer">
+      
+      <!-- 第1页：首页 + 价格保护承诺 -->
+      <div class="carousel-slide active">
+        <div class="slide-content">
+          <h1 class="mega-title mega-fade-in">
+            ⚡ xL&zzz专业代氪服务 ⚡
+          </h1>
+          
+          <!-- 价格保护徽章 -->
+          <div class="text-center mb-6 mega-fade-in" style="animation-delay: 0.1s;">
+            <div class="price-protection-badge inline-block">
+              🛡️ 永久价格保护承诺 🛡️
+            </div>
+          </div>
+          
+          <!-- 英雄区域 -->
+          <div class="ultimate-card p-8 mega-fade-in" style="animation-delay: 0.2s;">
+            <div class="relative z-10 text-center">
+              <div class="text-5xl mb-4">🎮</div>
+              <h2 class="text-3xl font-bold mb-4 text-cyan-400 text-glow">安全 · 快速 · 专业</h2>
+              <p class="text-lg mb-6 text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                专业的游戏代氪服务团队，提供最安全、最快速的充值体验。
+                我们拥有丰富的经验和完善的安全保障体系，让您的游戏之旅更加精彩！
+              </p>
+              <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-900/40 to-cyan-900/40 border-2 border-emerald-400/40 max-w-4xl mx-auto">
+                <div class="text-emerald-300 font-bold text-lg mb-2 text-glow">💰 独家价格保护承诺</div>
+                <p class="text-cyan-200">
+                  任何时间内在本店所购物品如果有所降价，一律进行补差价！
+                  让您购买无忧，享受最低价保障！
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 价格保护详细展示 -->
+          <div class="price-protection-mega-card p-6 mega-fade-in" style="animation-delay: 0.3s;">
+            <div class="text-center">
+              <div class="price-protection-mega-icon mb-4">🛡️</div>
+              <h3 class="text-2xl font-black mb-4 text-emerald-400 text-mega-glow">永久价格保护承诺</h3>
+              <div class="responsive-grid lg-2 max-w-4xl mx-auto text-left">
+                <div class="space-y-3">
+                  <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-emerald-500/30">
+                    <div class="text-emerald-400 text-xl">✅</div>
+                    <div>
+                      <h5 class="font-bold text-emerald-300">无时间限制</h5>
+                      <p class="text-gray-300 text-sm">购买后任何时候发现降价都可申请</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-emerald-500/30">
+                    <div class="text-emerald-400 text-xl">💰</div>
+                    <div>
+                      <h5 class="font-bold text-emerald-300">100%补差价</h5>
+                      <p class="text-gray-300 text-sm">发现降价立即退还差价</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-emerald-500/30">
+                    <div class="text-emerald-400 text-xl">⚡</div>
+                    <div>
+                      <h5 class="font-bold text-emerald-300">快速处理</h5>
+                      <p class="text-gray-300 text-sm">24小时内核实，48小时内退款</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-emerald-500/30">
+                    <div class="text-emerald-400 text-xl">🔄</div>
+                    <div>
+                      <h5 class="font-bold text-emerald-300">自动监控</h5>
+                      <p class="text-gray-300 text-sm">系统自动监控价格变化</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第2页：核心服务 -->
+      <div class="carousel-slide">
+        <div class="slide-content">
+          <h2 class="section-title mega-fade-in">🎯 核心服务</h2>
+          
+          <div class="responsive-grid lg-3">
+            <!-- 代氪服务 -->
+            <div class="service-card p-6 mega-fade-in" style="animation-delay: 0.1s;">
+              <div class="text-center">
+                <div class="service-icon text-emerald-400 mb-4">💳</div>
+                <h3 class="text-xl font-bold mb-4 text-emerald-400 text-glow">代氪服务</h3>
+                <div class="feature-badge mb-4">🔥 高倍返点</div>
+                <p class="text-gray-300 mb-4 leading-relaxed text-sm">
+                  提供2.5倍返点券代氪服务，超值优惠让您享受更多游戏乐趣。安全快速，信誉保证。
+                </p>
+                <ul class="text-left space-y-2 mb-4 text-sm">
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>2.5倍返点券</li>
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>50代氪出红币</li>
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>限时返厂服务</li>
+                  <li class="flex items-center"><span class="text-yellow-400 mr-2">🛡️</span>价格保护保障</li>
+                </ul>
+                <a href="#" class="mega-button w-full text-sm py-2" data-slide="4">立即下单</a>
+              </div>
+            </div>
+
+            <!-- 游戏物品 -->
+            <div class="service-card p-6 mega-fade-in" style="animation-delay: 0.2s;">
+              <div class="text-center">
+                <div class="service-icon text-purple-400 mb-4">⛏️</div>
+                <h3 class="text-xl font-bold mb-4 text-purple-400 text-glow">游戏物品</h3>
+                <div class="feature-badge mb-4">💎 品质保证</div>
+                <p class="text-gray-300 mb-4 leading-relaxed text-sm">
+                  各类游戏道具、矿物、晶体等，品种齐全，价格优惠，品质保证。
+                </p>
+                <ul class="text-left space-y-2 mb-4 text-sm">
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>黑白矿物</li>
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>暗红/粉红晶体</li>
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>私矿/以太</li>
+                  <li class="flex items-center"><span class="text-yellow-400 mr-2">🛡️</span>价格保护保障</li>
+                </ul>
+                <a href="#" class="mega-button w-full text-sm py-2" data-slide="4">查看详情</a>
+              </div>
+            </div>
+
+            <!-- 强化服务 -->
+            <div class="service-card p-6 mega-fade-in" style="animation-delay: 0.3s;">
+              <div class="text-center">
+                <div class="service-icon text-yellow-400 mb-4">⚡</div>
+                <h3 class="text-xl font-bold mb-4 text-yellow-400 text-glow">强化服务</h3>
+                <div class="feature-badge mb-4">👑 专业技术</div>
+                <p class="text-gray-300 mb-4 leading-relaxed text-sm">
+                  专业的装备强化服务，从+17到+21，成功率高，价格透明。
+                </p>
+                <ul class="text-left space-y-2 mb-4 text-sm">
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>+17 到 +21</li>
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>高成功率</li>
+                  <li class="flex items-center"><span class="text-green-400 mr-2">✓</span>价格透明</li>
+                  <li class="flex items-center"><span class="text-yellow-400 mr-2">🛡️</span>价格保护保障</li>
+                </ul>
+                <a href="#" class="mega-button w-full text-sm py-2" data-slide="4">立即强化</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第3页：价格表 -->
+      <div class="carousel-slide">
+        <div class="slide-content">
+          <h2 class="section-title mega-fade-in">💰 价格表</h2>
+          
+          <!-- 价格保护提醒 -->
+          <div class="text-center mb-6 mega-fade-in">
+            <div class="ultimate-card p-4">
+              <div class="flex items-center justify-center gap-4 mb-2">
+                <div class="text-2xl">🛡️</div>
+                <div class="text-lg font-bold text-emerald-400 text-glow">价格保护承诺</div>
+                <div class="text-2xl">🛡️</div>
+              </div>
+              <p class="text-gray-300">
+                以下所有价格均享受<span class="text-emerald-400 font-bold">永久价格保护</span>，
+                任何时候发现降价都可申请补差价！
+              </p>
+            </div>
+          </div>
+          
+          <div class="responsive-grid lg-4">
+            <!-- 强化价格 -->
+            <div class="price-card p-4 mega-fade-in" style="animation-delay: 0.1s;">
+              <div class="text-center">
+                <h3 class="text-lg font-bold mb-3 text-yellow-400">⚡ 强化服务</h3>
+                <div class="mb-3">
+                  <div class="price-protection-badge text-xs py-1 px-2">价格保护</div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>+17</span>
+                    <span class="text-yellow-400 font-bold">80元</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>+18</span>
+                    <span class="text-yellow-400 font-bold">120元</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>+19</span>
+                    <span class="text-yellow-400 font-bold">270元</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>+20</span>
+                    <span class="text-yellow-400 font-bold">420元</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>+21</span>
+                    <span class="text-yellow-400 font-bold">570元</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 游戏物品价格 -->
+            <div class="price-card p-4 mega-fade-in" style="animation-delay: 0.2s;">
+              <div class="text-center">
+                <h3 class="text-lg font-bold mb-3 text-purple-400">💎 游戏物品</h3>
+                <div class="mb-3">
+                  <div class="price-protection-badge text-xs py-1 px-2">价格保护</div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>暗红晶体</span>
+                    <span class="text-red-400 font-bold">5元/组</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>粉红晶体</span>
+                    <span class="text-pink-400 font-bold">10元/组</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>以太</span>
+                    <span class="text-blue-400 font-bold">5元/150w</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>决绝镐(5倍)</span>
+                    <span class="text-yellow-400 font-bold">175元</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>私矿</span>
+                    <span class="text-orange-400 font-bold">500代氪</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 代氪服务价格 -->
+            <div class="price-card featured p-4 mega-fade-in" style="animation-delay: 0.3s;">
+              <div class="text-center">
+                <div class="feature-badge mb-3">🔥 推荐</div>
+                <h3 class="text-lg font-bold mb-3 text-emerald-400">💳 代氪服务</h3>
+                <div class="mb-3">
+                  <div class="price-protection-badge text-xs py-1 px-2">价格保护</div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>2.5倍返点券</span>
+                    <span class="text-emerald-400 font-bold">超值</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>50代氪出红币</span>
+                    <span class="text-emerald-400 font-bold">快速</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>限时返厂</span>
+                    <span class="text-emerald-400 font-bold">专属</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-sm">
+                    <span>副本材料</span>
+                    <span class="text-emerald-400 font-bold">代打</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 收购服务 -->
+            <div class="price-card p-4 mega-fade-in" style="animation-delay: 0.4s;">
+              <div class="text-center">
+                <h3 class="text-lg font-bold mb-3 text-green-400">🍎 收购服务</h3>
+                <div class="mb-3">
+                  <div class="price-protection-badge text-xs py-1 px-2">价格保护</div>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-xs">
+                    <span>32w以太收L1L2</span>
+                    <span class="text-green-400 font-bold">高价</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-xs">
+                    <span>5w/矿收4倍书</span>
+                    <span class="text-green-400 font-bold">灵活</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-xs">
+                    <span>20w/12黑/6白收钻</span>
+                    <span class="text-green-400 font-bold">多选</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded bg-black bg-opacity-30 text-xs">
+                    <span>80w收盒装鸡鸭</span>
+                    <span class="text-green-400 font-bold">80w</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第4页：服务流程 -->
+      <div class="carousel-slide">
+        <div class="slide-content">
+          <h2 class="section-title mega-fade-in">🔄 服务流程</h2>
+          
+          <div class="responsive-grid lg-4 mb-8">
+            <div class="step-card p-4 text-center mega-fade-in" style="animation-delay: 0.1s;">
+              <div class="step-number mx-auto mb-3">1</div>
+              <h3 class="text-lg font-bold mb-2 text-cyan-400">联系客服</h3>
+              <p class="text-gray-300 text-sm">通过QQ或微信联系我们的专业客服，说明您的需求</p>
+            </div>
+            
+            <div class="step-card p-4 text-center mega-fade-in" style="animation-delay: 0.2s;">
+              <div class="step-number mx-auto mb-3">2</div>
+              <h3 class="text-lg font-bold mb-2 text-purple-400">确认订单</h3>
+              <p class="text-gray-300 text-sm">客服为您报价，确认服务内容和价格，签订安全协议</p>
+            </div>
+            
+            <div class="step-card p-4 text-center mega-fade-in" style="animation-delay: 0.3s;">
+              <div class="step-number mx-auto mb-3">3</div>
+              <h3 class="text-lg font-bold mb-2 text-emerald-400">安全支付</h3>
+              <p class="text-gray-300 text-sm">支持多种安全支付方式，资金安全有保障</p>
+            </div>
+            
+            <div class="step-card p-4 text-center mega-fade-in" style="animation-delay: 0.4s;">
+              <div class="step-number mx-auto mb-3">4</div>
+              <h3 class="text-lg font-bold mb-2 text-yellow-400">完成服务</h3>
+              <p class="text-gray-300 text-sm">专业团队快速完成服务，全程跟踪，确保满意</p>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <div class="ultimate-card p-6 mega-fade-in" style="animation-delay: 0.5s;">
+              <h3 class="text-xl font-bold mb-4 text-cyan-400 text-glow">🛡️ 安全保障</h3>
+              <div class="responsive-grid lg-3 text-left">
+                <div>
+                  <h4 class="font-bold text-emerald-400 mb-2">🔒 账号安全</h4>
+                  <p class="text-sm text-gray-300">绝不记录您的账号信息，专业技术确保账号安全</p>
+                </div>
+                <div>
+                  <h4 class="font-bold text-blue-400 mb-2">💰 资金安全</h4>
+                  <p class="text-sm text-gray-300">支持担保交易，先服务后付款，资金安全有保障</p>
+                </div>
+                <div>
+                  <h4 class="font-bold text-purple-400 mb-2">⚡ 快速服务</h4>
+                  <p class="text-sm text-gray-300">24小时在线客服，快速响应，高效完成服务</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第5页：联系我们 -->
+      <div class="carousel-slide">
+        <div class="slide-content">
+          <h2 class="section-title mega-fade-in">📞 联系我们</h2>
+          
+          <div class="responsive-grid lg-2">
+            <!-- 联系信息 -->
+            <div class="contact-card ultimate-card p-6 mega-fade-in" style="animation-delay: 0.1s;">
+              <h3 class="text-xl font-bold mb-4 text-emerald-400 text-glow">💬 多种联系方式</h3>
+              
+              <div class="space-y-4">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-black bg-opacity-30">
+                  <div class="text-xl">🐧</div>
+                  <div>
+                    <h4 class="font-bold text-cyan-400">QQ客服1</h4>
+                    <p class="text-gray-300 text-sm">QQ号：907141559 && 952192594</p>
+                    <p class="text-xs text-gray-400">（推荐，响应快）</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-black bg-opacity-30">
+                  <div class="text-xl">🐧</div>
+                  <div>
+                    <h4 class="font-bold text-blue-400">QQ客服2</h4>
+                    <p class="text-gray-300 text-sm">QQ号：1019783040</p>
+                    <p class="text-xs text-gray-400">（在线时间：9:00-24:00）</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-black bg-opacity-30">
+                  <div class="text-xl">👥</div>
+                  <div>
+                    <h4 class="font-bold text-purple-400">QQ群</h4>
+                    <p class="text-gray-300 text-sm">群号：1055419660</p>
+                    <p class="text-xs text-gray-400">（交流群，获取最新优惠）</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-6 p-3 rounded-xl bg-gradient-to-r from-emerald-900/30 to-cyan-900/30 border border-emerald-500/30">
+                <h4 class="font-bold text-emerald-400 mb-2">🎁 新客优惠</h4>
+                <p class="text-sm text-gray-300">首次下单享受95折优惠！添加客服时请说明是新客户。</p>
+              </div>
+            </div>
+
+            <!-- 服务承诺 -->
+            <div class="ultimate-card p-6 mega-fade-in" style="animation-delay: 0.2s;">
+              <h3 class="text-xl font-bold mb-4 text-yellow-400 text-glow">⭐ 服务承诺</h3>
+              
+              <div class="space-y-3">
+                <div class="flex items-start gap-3 p-3 rounded-lg bg-green-900/20 border border-green-500/30">
+                  <div class="text-green-400 text-lg mt-1">✅</div>
+                  <div>
+                    <h4 class="font-semibold text-green-400">100%安全保障</h4>
+                    <p class="text-xs text-gray-300">专业团队操作，绝不泄露客户信息</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 rounded-lg bg-blue-900/20 border border-blue-500/30">
+                  <div class="text-blue-400 text-lg mt-1">⚡</div>
+                  <div>
+                    <h4 class="font-semibold text-blue-400">快速响应</h4>
+                    <p class="text-xs text-gray-300">24小时在线，5分钟内回复消息</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 rounded-lg bg-purple-900/20 border border-purple-500/30">
+                  <div class="text-purple-400 text-lg mt-1">🎯</div>
+                  <div>
+                    <h4 class="font-semibold text-purple-400">专业服务</h4>
+                    <p class="text-xs text-gray-300">3年从业经验，服务千名客户</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 rounded-lg bg-yellow-900/20 border border-yellow-500/30">
+                  <div class="text-yellow-400 text-lg mt-1">💰</div>
+                  <div>
+                    <h4 class="font-semibold text-yellow-400">价格透明</h4>
+                    <p class="text-xs text-gray-300">明码标价，绝无隐形消费</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 rounded-lg bg-emerald-900/20 border border-emerald-500/30">
+                  <div class="text-emerald-400 text-lg mt-1">🛡️</div>
+                  <div>
+                    <h4 class="font-semibold text-emerald-400">永久价格保护</h4>
+                    <p class="text-xs text-gray-300">任何时间发现降价都可申请补差价</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 rounded-lg bg-red-900/20 border border-red-500/30">
+                  <div class="text-red-400 text-lg mt-1">🛡️</div>
+                  <div>
+                    <h4 class="font-semibold text-red-400">售后保障</h4>
+                    <p class="text-xs text-gray-300">7天售后服务，问题及时解决</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-6 text-center">
+                <a href="#" class="mega-button danger" data-slide="0">返回首页</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部信息 -->
+          <div class="mt-6">
+            <div class="ultimate-card p-4 text-center mega-fade-in" style="animation-delay: 0.3s;">
+              <div class="text-cyan-400 font-bold mb-2">⚡ xL&zzz专业代氪服务 ⚡</div>
+              <p class="text-sm text-gray-400">专业 · 安全 · 快速 · 可靠 · 价格保护</p>
+              <p class="text-xs text-gray-500 mt-2">© 2025 xL&zzz代氪服务. 保留所有权利. 永久价格保护承诺.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 轮播导航按钮 -->
+    <button class="carousel-nav prev" id="prevBtn">
+      <span class="carousel-nav-icon">◀</span>
+    </button>
+    <button class="carousel-nav next" id="nextBtn">
+      <span class="carousel-nav-icon">▶</span>
+    </button>
+
+    <!-- 轮播指示器 -->
+    <div class="carousel-indicators">
+      <button class="carousel-indicator active" data-slide="0"></button>
+      <button class="carousel-indicator" data-slide="1"></button>
+      <button class="carousel-indicator" data-slide="2"></button>
+      <button class="carousel-indicator" data-slide="3"></button>
+      <button class="carousel-indicator" data-slide="4"></button>
+    </div>
+  </div>
+
+  <script>
+    // 轮播控制逻辑
+    class MegaCarousel {
+      constructor() {
+        this.currentSlide = 0;
+        this.totalSlides = 5;
+        this.container = document.getElementById('carouselContainer');
+        this.indicators = document.querySelectorAll('.carousel-indicator');
+        this.navLinks = document.querySelectorAll('.nav-link');
+        this.isAnimating = false;
+        
+        this.init();
+      }
+
+      init() {
+        // 绑定导航按钮事件
+        document.getElementById('prevBtn').addEventListener('click', () => this.prevSlide());
+        document.getElementById('nextBtn').addEventListener('click', () => this.nextSlide());
+        
+        // 绑定指示器事件
+        this.indicators.forEach((indicator, index) => {
+          indicator.addEventListener('click', () => this.goToSlide(index));
+        });
+
+        // 绑定导航链接事件
+        this.navLinks.forEach((link, index) => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const slideIndex = parseInt(link.getAttribute('data-slide'));
+            this.goToSlide(slideIndex);
+          });
+        });
+
+        // 绑定其他按钮事件
+        document.querySelectorAll('[data-slide]').forEach(btn => {
+          if (!btn.classList.contains('nav-link')) {
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              const slideIndex = parseInt(btn.getAttribute('data-slide'));
+              this.goToSlide(slideIndex);
+            });
+          }
+        });
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') this.prevSlide();
+          if (e.key === 'ArrowRight') this.nextSlide();
+        });
+
+        // 触摸滑动支持
+        this.initTouchEvents();
+
+        // 自动播放（可选）
+        // this.startAutoPlay();
+      }
+
+      goToSlide(index) {
+        if (this.isAnimating || index === this.currentSlide) return;
+        
+        this.isAnimating = true;
+        this.currentSlide = index;
+        
+        // 移动容器
+        const translateX = -index * 20; // 每个slide占20%
+        this.container.style.transform = `translateX(${translateX}%)`;
+        
+        // 更新指示器
+        this.updateIndicators();
+        
+        // 更新导航链接
+        this.updateNavLinks();
+
+        // 添加slide动画
+        const slides = document.querySelectorAll('.carousel-slide');
+        slides.forEach((slide, i) => {
+          slide.classList.remove('active');
+          if (i === index) {
+            slide.classList.add('active');
+          }
+        });
+        
+        // 重置动画标志
+        setTimeout(() => {
+          this.isAnimating = false;
+        }, 800);
+      }
+
+      prevSlide() {
+        const newIndex = this.currentSlide === 0 ? this.totalSlides - 1 : this.currentSlide - 1;
+        this.goToSlide(newIndex);
+      }
+
+      nextSlide() {
+        const newIndex = this.currentSlide === this.totalSlides - 1 ? 0 : this.currentSlide + 1;
+        this.goToSlide(newIndex);
+      }
+
+      updateIndicators() {
+        this.indicators.forEach((indicator, index) => {
+          indicator.classList.toggle('active', index === this.currentSlide);
+        });
+      }
+
+      updateNavLinks() {
+        this.navLinks.forEach((link, index) => {
+          const slideIndex = parseInt(link.getAttribute('data-slide'));
+          link.classList.toggle('active', slideIndex === this.currentSlide);
+        });
+      }
+
+      initTouchEvents() {
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let currentY = 0;
+
+        this.container.addEventListener('touchstart', (e) => {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        this.container.addEventListener('touchmove', (e) => {
+          currentX = e.touches[0].clientX;
+          currentY = e.touches[0].clientY;
+        }, { passive: true });
+
+        this.container.addEventListener('touchend', () => {
+          const diffX = startX - currentX;
+          const diffY = startY - currentY;
+
+          // 确保是水平滑动
+          if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+            if (diffX > 0) {
+              this.nextSlide();
+            } else {
+              this.prevSlide();
+            }
+          }
+        }, { passive: true });
+      }
+
+      startAutoPlay(interval = 5000) {
+        setInterval(() => {
+          if (!this.isAnimating) {
+            this.nextSlide();
+          }
+        }, interval);
+      }
+    }
+
+    // 初始化轮播
+    document.addEventListener('DOMContentLoaded', () => {
+      new MegaCarousel();
+
+      // 添加页面加载动画
+      document.querySelectorAll('.mega-fade-in').forEach((el, index) => {
+        el.style.animationDelay = `${index * 0.1}s`;
+      });
+
+      // 按钮点击效果
+      document.querySelectorAll('.mega-button').forEach(button => {
+        button.addEventListener('click', function(e) {
+          // 创建点击波纹效果
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          
+          ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+          `;
+          
+          this.appendChild(ripple);
+          
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+
+      // CSS 动画定义
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes ripple {
+          to {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  </script>
+</body>
+</html>
