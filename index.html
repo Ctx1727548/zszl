@@ -1,241 +1,724 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>代氪额度排行榜 & 奖励兑换</title>
+  <title>溪澪拉代氪额度排行榜 & 奖励兑换</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    
+    :root {
+      --primary-glow: #00f7ff;
+      --secondary-glow: #ff4444;
+      --gold-glow: #ffd700;
+      --purple-glow: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background: radial-gradient(circle, #0f172a, #000);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at 20% 50%, #0f0f23 0%, #000000 50%, #0f0f23 100%);
+      font-family: 'Orbitron', 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
     }
-    .glow-card {
-      background: linear-gradient(145deg, #1e293b, #0f172a);
-      box-shadow: 0 0 15px #00f7ff55, 0 0 5px #00f7ff22;
-      border: 1px solid #00f7ff33;
-      transition: transform 0.3s ease;
+
+    /* 动态背景粒子效果 */
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
     }
-    .glow-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 25px #00f7ff88, 0 0 10px #00f7ff44;
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--primary-glow);
+      border-radius: 50%;
+      animation: float 6s infinite linear;
+      opacity: 0.3;
     }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    /* 高级卡片样式 */
+    .premium-card {
+      background: linear-gradient(145deg, #1a1a2e, #16213e, #0f172a);
+      border: 1px solid rgba(0, 247, 255, 0.3);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .premium-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .premium-card:hover::before {
+      left: 100%;
+    }
+
+    .premium-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 20px 40px rgba(0, 247, 255, 0.3),
+        0 0 60px rgba(0, 247, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-color: var(--primary-glow);
+    }
+
+    /* 奖励卡片样式 */
     .reward-card {
-      background: linear-gradient(145deg, #2d1b1b, #1a0f0f);
-      box-shadow: 0 0 15px #ff444455, 0 0 5px #ff444422;
-      border: 1px solid #ff444433;
-      transition: transform 0.3s ease;
+      background: linear-gradient(145deg, #2d1b2d, #1a0f1a, #0d0d0d);
+      border: 1px solid rgba(255, 68, 68, 0.3);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
     }
+
+    .reward-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(255, 68, 68, 0.2) 0%, transparent 70%);
+      transition: all 0.3s ease;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .reward-card:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
     .reward-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 25px #ff444488, 0 0 10px #ff444444;
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(255, 68, 68, 0.4);
+      border-color: var(--secondary-glow);
     }
-    .search-box {
+
+    /* 搜索框增强 */
+    .search-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .enhanced-search {
       background: linear-gradient(145deg, #1e293b, #0f172a);
-      box-shadow: 0 0 10px #00f7ff33;
-      border: 1px solid #00f7ff44;
+      border: 2px solid rgba(0, 247, 255, 0.3);
+      border-radius: 25px;
+      padding: 12px 20px 12px 45px;
+      color: white;
+      transition: all 0.3s ease;
+      width: 280px;
     }
-    .search-box:focus {
+
+    .enhanced-search:focus {
       outline: none;
-      box-shadow: 0 0 20px #00f7ff66;
-      border-color: #00f7ff;
+      border-color: var(--primary-glow);
+      box-shadow: 0 0 30px rgba(0, 247, 255, 0.5);
+      transform: scale(1.05);
     }
-    .title {
-      text-shadow: 0 0 10px #00f7ff, 0 0 20px #00f7ff;
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-glow);
+      font-size: 16px;
     }
-    .rank-1 { border-left: 4px solid #ffd700; }
-    .rank-2 { border-left: 4px solid #c0c0c0; }
-    .rank-3 { border-left: 4px solid #cd7f32; }
-    .search-result {
-      background: linear-gradient(145deg, #2d2d1b, #1a1a0f);
-      box-shadow: 0 0 15px #ffff0055;
-      border: 1px solid #ffff0033;
+
+    /* 标题炫酷效果 */
+    .cyber-title {
+      background: linear-gradient(45deg, #00f7ff, #ff00ff, #00f7ff);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(0, 247, 255, 0.5);
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* 排名徽章 */
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      font-weight: 900;
+      font-size: 1.5rem;
+      position: relative;
+      margin-right: 20px;
+    }
+
+    .rank-1 { 
+      background: radial-gradient(circle, #ffd700, #ffed4e);
+      color: #8b4513;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+      animation: goldPulse 2s ease-in-out infinite;
+    }
+
+    .rank-2 { 
+      background: radial-gradient(circle, #c0c0c0, #e5e5e5);
+      color: #666;
+      box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+    }
+
+    .rank-3 { 
+      background: radial-gradient(circle, #cd7f32, #d4af37);
+      color: #4a2c2a;
+      box-shadow: 0 0 20px rgba(205, 127, 50, 0.5);
+    }
+
+    @keyframes goldPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* 数值动画 */
+    .animated-number {
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .animated-number:hover {
+      transform: scale(1.1);
+      text-shadow: 0 0 20px currentColor;
+    }
+
+    /* 加载动画 */
+    .loading {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(0, 247, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-glow);
+      animation: spin 1s ease-in-out infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .enhanced-search { width: 200px; padding: 10px 15px 10px 35px; }
+      .rank-badge { width: 45px; height: 45px; font-size: 1.2rem; margin-right: 15px; }
+      .cyber-title { font-size: 2rem; }
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--primary-glow), var(--secondary-glow));
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--secondary-glow), var(--primary-glow));
+    }
+
+    /* 特效按钮 */
+    .cyber-button {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 2px solid var(--primary-glow);
+      color: var(--primary-glow);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cyber-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .cyber-button:hover::before {
+      left: 100%;
+    }
+
+    .cyber-button:hover {
+      background: rgba(0, 247, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 247, 255, 0.4);
+    }
+
+    /* 状态指示器 */
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary-glow);
+      box-shadow: 0 0 10px var(--primary-glow);
+      animation: pulse 2s infinite;
+      display: inline-block;
+      margin-left: 8px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .player-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: slideInUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
-<body class="text-white py-8 px-6">
+<body class="text-white py-6 px-4">
+  
+  <!-- 动态背景粒子 -->
+  <div class="bg-particles" id="particles"></div>
 
-  <h1 class="text-4xl font-bold text-center mb-8 text-cyan-400 title">💎 溪澪拉代氪额度排行榜 & 奖励兑换 💎</h1>
+  <!-- 主标题 -->
+  <div class="text-center mb-8">
+    <h1 class="text-5xl md:text-6xl font-black cyber-title mb-4">
+      💎 xL & zzz 拉代氪额度排行榜 💎
+    </h1>
+    <div class="flex justify-center items-center">
+      <span class="text-cyan-300 mr-2">实时更新</span>
+      <div class="status-indicator"></div>
+    </div>
+  </div>
 
-  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-4 gap-8">
     
     <!-- 左侧主体：代氪额度排行榜 -->
-    <div class="lg:col-span-3">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-semibold text-cyan-300">🏆 拉代氪额度排行榜</h2>
-        <div class="flex gap-3">
-          <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="搜索玩家ID..." 
-            class="search-box px-4 py-2 rounded-lg text-white bg-transparent w-48"
-            onkeyup="searchPlayer()"
-          />
+    <div class="xl:col-span-3">
+      
+      <!-- 搜索和控制区域 -->
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+        <h2 class="text-2xl md:text-3xl font-bold text-cyan-300 flex items-center">
+          <i class="fas fa-trophy mr-3 text-yellow-400"></i>
+          拉代氪额度排行榜
+        </h2>
+        
+        <div class="flex gap-3 items-center">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input 
+              type="text" 
+              id="searchInput" 
+              placeholder="搜索玩家ID..." 
+              class="enhanced-search"
+              onkeyup="searchPlayer()"
+              autocomplete="off"
+            />
+          </div>
           <button 
             onclick="clearSearch()" 
-            class="search-box px-4 py-2 rounded-lg text-cyan-300 hover:text-white transition-colors"
+            class="cyber-button"
+            title="清除搜索"
           >
-            清除
+            <i class="fas fa-times"></i>
+          </button>
+          <button 
+            onclick="refreshRanking()" 
+            class="cyber-button"
+            title="刷新排行榜"
+          >
+            <i class="fas fa-sync-alt"></i>
           </button>
         </div>
       </div>
       
       <!-- 搜索结果区域 -->
-      <div id="searchResult" class="mb-4 hidden">
+      <div id="searchResult" class="mb-6 hidden">
         <!-- 搜索结果会在这里显示 -->
+      </div>
+      
+      <!-- 排行榜统计信息 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="premium-card p-4 text-center">
+          <div class="text-cyan-400 text-sm mb-1">总玩家</div>
+          <div class="text-2xl font-bold" id="totalPlayers">0</div>
+        </div>
+        <div class="premium-card p-4 text-center">
+          <div class="text-green-400 text-sm mb-1">总额度</div>
+          <div class="text-2xl font-bold" id="totalAmount">0</div>
+        </div>
+        <div class="premium-card p-4 text-center">
+          <div class="text-yellow-400 text-sm mb-1">平均额度</div>
+          <div class="text-2xl font-bold" id="avgAmount">0</div>
+        </div>
+        <div class="premium-card p-4 text-center">
+          <div class="text-purple-400 text-sm mb-1">在线玩家</div>
+          <div class="text-2xl font-bold text-green-400">
+            <span id="onlinePlayers">0</span>
+            <div class="status-indicator ml-2"></div>
+          </div>
+        </div>
       </div>
       
       <!-- 排行榜列表 -->
       <div class="space-y-4" id="rankingList">
-        <!-- 排行榜会通过JS动态生成 -->
+        <div class="loading mx-auto"></div>
       </div>
+      
     </div>
 
     <!-- 右侧：奖励兑换区 -->
-    <div class="lg:col-span-1">
-      <h2 class="text-2xl font-semibold mb-4 text-red-300">🎁 奖励兑换</h2>
-      <div class="space-y-3">
+    <div class="xl:col-span-1">
+      <div class="sticky top-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">
+          <i class="fas fa-gift mr-2 text-red-400"></i>
+          <span class="text-red-300">奖励兑换</span>
+        </h2>
         
-        <div class="reward-card p-4 rounded-lg">
-          <div class="text-center">
-            <div class="text-lg font-bold text-purple-300">⚡ +21 强化</div>
-            <div class="text-2xl font-bold text-yellow-400 mt-1">5000 代氪</div>
-            <div class="text-xs text-gray-400 mt-2">顶级强化道具</div>
+        <div class="space-y-4">
+          
+          <div class="reward-card p-5 text-center" onclick="selectReward(5000, '+21 强化')">
+            <div class="relative z-10">
+              <div class="text-purple-300 text-lg font-bold mb-2">
+                <i class="fas fa-bolt mr-2"></i>+21 强化
+              </div>
+              <div class="text-yellow-400 text-3xl font-black mb-2 animated-number">
+                5,000 <span class="text-sm">代氪</span>
+              </div>
+              <div class="text-xs text-gray-400 mb-3">顶级强化道具</div>
+              <div class="flex justify-center items-center text-xs text-green-400">
+                <i class="fas fa-star mr-1"></i>
+                <span>限量珍品</span>
+              </div>
+            </div>
           </div>
+          
+          <div class="reward-card p-5 text-center" onclick="selectReward(3000, '+20 强化')">
+            <div class="relative z-10">
+              <div class="text-purple-300 text-lg font-bold mb-2">
+                <i class="fas fa-bolt mr-2"></i>+20 强化
+              </div>
+              <div class="text-yellow-400 text-2xl font-bold mb-2 animated-number">
+                3,000 <span class="text-sm">代氪</span>
+              </div>
+              <div class="text-xs text-gray-400 mb-3">高级强化道具</div>
+              <div class="flex justify-center items-center text-xs text-blue-400">
+                <i class="fas fa-gem mr-1"></i>
+                <span>稀有物品</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="reward-card p-5 text-center" onclick="selectReward(2000, '+19 强化')">
+            <div class="relative z-10">
+              <div class="text-purple-300 text-lg font-bold mb-2">
+                <i class="fas fa-bolt mr-2"></i>+19 强化
+              </div>
+              <div class="text-yellow-400 text-2xl font-bold mb-2 animated-number">
+                2,000 <span class="text-sm">代氪</span>
+              </div>
+              <div class="text-xs text-gray-400 mb-3">中级强化道具</div>
+              <div class="flex justify-center items-center text-xs text-cyan-400">
+                <i class="fas fa-shield mr-1"></i>
+                <span>优质装备</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="reward-card p-4 text-center" onclick="selectReward(750, '+18 强化')">
+            <div class="relative z-10">
+              <div class="text-purple-300 font-bold mb-2">
+                <i class="fas fa-bolt mr-2"></i>+18 强化
+              </div>
+              <div class="text-yellow-400 text-xl font-bold mb-2 animated-number">
+                750 <span class="text-sm">代氪</span>
+              </div>
+              <div class="text-xs text-gray-400 mb-2">进阶强化道具</div>
+              <div class="text-xs text-orange-400">
+                <i class="fas fa-fire mr-1"></i>热门选择
+              </div>
+            </div>
+          </div>
+          
+          <div class="reward-card p-4 text-center" onclick="selectReward(500, '+17 强化')">
+            <div class="relative z-10">
+              <div class="text-purple-300 font-bold mb-2">
+                <i class="fas fa-bolt mr-2"></i>+17 强化
+              </div>
+              <div class="text-yellow-400 text-xl font-bold mb-2 animated-number">
+                500 <span class="text-sm">代氪</span>
+              </div>
+              <div class="text-xs text-gray-400 mb-2">基础强化道具</div>
+              <div class="text-xs text-green-400">
+                <i class="fas fa-leaf mr-1"></i>新手推荐
+              </div>
+            </div>
+          </div>
+          
         </div>
         
-        <div class="reward-card p-4 rounded-lg">
-          <div class="text-center">
-            <div class="text-lg font-bold text-purple-300">⚡ +20 强化</div>
-            <div class="text-xl font-bold text-yellow-400 mt-1">3000 代氪</div>
-            <div class="text-xs text-gray-400 mt-2">高级强化道具</div>
+        <!-- 兑换说明 -->
+        <div class="mt-6 p-4 bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-lg border border-red-500/50">
+          <div class="flex items-center justify-center mb-2">
+            <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+            <span class="text-red-300 font-bold">重要提醒</span>
           </div>
+          <p class="text-red-300 text-sm text-center leading-relaxed">
+            换完的部分不算在下次兑换里<br>
+            <span class="text-xs text-gray-400 mt-1 block">兑换后额度将从排行榜中扣除</span>
+          </p>
         </div>
         
-        <div class="reward-card p-4 rounded-lg">
-          <div class="text-center">
-            <div class="text-lg font-bold text-purple-300">⚡ +19 强化</div>
-            <div class="text-xl font-bold text-yellow-400 mt-1">2000 代氪</div>
-            <div class="text-xs text-gray-400 mt-2">中级强化道具</div>
-          </div>
-        </div>
-        
-        <div class="reward-card p-4 rounded-lg">
-          <div class="text-center">
-            <div class="text-lg font-bold text-purple-300">⚡ +18 强化</div>
-            <div class="text-lg font-bold text-yellow-400 mt-1">750 代氪</div>
-            <div class="text-xs text-gray-400 mt-2">进阶强化道具</div>
-          </div>
-        </div>
-        
-        <div class="reward-card p-4 rounded-lg">
-          <div class="text-center">
-            <div class="text-lg font-bold text-purple-300">⚡ +17 强化</div>
-            <div class="text-lg font-bold text-yellow-400 mt-1">500 代氪</div>
-            <div class="text-xs text-gray-400 mt-2">基础强化道具</div>
-          </div>
+        <!-- 联系客服 -->
+        <div class="mt-4 text-center">
+          <button class="cyber-button w-full" onclick="contactSupport()">
+            <i class="fas fa-headset mr-2"></i>
+            联系客服兑换
+          </button>
         </div>
         
       </div>
-      
-      <div class="mt-6 p-3 bg-red-900/30 rounded-lg border border-red-500/50">
-        <p class="text-red-300 text-sm text-center">
-          ⚠️ 注意：换完的部分不算在下次兑换里
-        </p>
-      </div>
-      
     </div>
     
   </div>
 
   <script>
-    // 模拟所有玩家数据（按amount从大到小排序）
+    // 增强的玩家数据
     const allPlayers = [
-      { rank: 1, id: 'Xiaoyui', amount: 2570, title: '至尊玩家' },
-      { rank: 2, id: '0284', amount: 131, title: '至尊玩家' },
-      { rank: 3, id: 'Feiji', amount: 812, title: '至尊玩家' },
-      { rank: 4, id: 'love_mo', amount: 2174, title: '至尊玩家' },
-      { rank: 5, id: 'ACMer', amount: 568, title: '至尊玩家' }
+      { 
+        rank: 1, 
+        id: 'Xiaoyui', 
+        amount: 2570, 
+        title: '至尊玩家', 
+        online: true,
+        lastActive: '刚刚',
+        vipLevel: 'VIP 10',
+        avatar: '👑'
+      },
+      { 
+        rank: 2, 
+        id: 'love_mo', 
+        amount: 2174, 
+        title: '至尊玩家', 
+        online: true,
+        lastActive: '2分钟前',
+        vipLevel: 'VIP 9',
+        avatar: '⚡'
+      },
+      { 
+        rank: 3, 
+        id: 'Feiji', 
+        amount: 812, 
+        title: '至尊玩家', 
+        online: false,
+        lastActive: '1小时前',
+        vipLevel: 'VIP 8',
+        avatar: '🚀'
+      },
+      { 
+        rank: 4, 
+        id: 'ACMer', 
+        amount: 568, 
+        title: '至尊玩家', 
+        online: true,
+        lastActive: '5分钟前',
+        vipLevel: 'VIP 7',
+        avatar: '🏆'
+      },
+      { 
+        rank: 5, 
+        id: '0284', 
+        amount: 131, 
+        title: '钻石玩家', 
+        online: false,
+        lastActive: '30分钟前',
+        vipLevel: 'VIP 5',
+        avatar: '💎'
+      }
     ];
 
-    // 获取排名图标
-    function getRankIcon(rank) {
-      const icons = {
-        1: '🥇', 2: '🥈', 3: '🥉', 4: '4️⃣', 5: '5️⃣',
-        6: '6️⃣', 7: '7️⃣', 8: '8️⃣', 9: '9️⃣', 10: '🔟'
-      };
-      return icons[rank] || `${rank}`;
+    // 创建粒子背景
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        particlesContainer.appendChild(particle);
+      }
     }
 
-    // 获取排名样式类
-    function getRankClass(rank) {
-      if (rank === 1) return 'rank-1';
-      if (rank === 2) return 'rank-2';
-      if (rank === 3) return 'rank-3';
-      return '';
+    // 获取排名徽章
+    function getRankBadge(rank, avatar) {
+      let badgeClass = '';
+      if (rank === 1) badgeClass = 'rank-1';
+      else if (rank === 2) badgeClass = 'rank-2';
+      else if (rank === 3) badgeClass = 'rank-3';
+      else badgeClass = 'bg-gradient-to-br from-gray-600 to-gray-800 text-gray-300';
+
+      return `<div class="rank-badge ${badgeClass}">${avatar || rank}</div>`;
     }
 
-    // 获取文字颜色
-    function getTextColor(rank) {
-      if (rank === 1) return 'text-yellow-400';
-      if (rank === 2) return 'text-gray-300';
-      if (rank === 3) return 'text-orange-400';
-      return 'text-cyan-300';
+    // 获取在线状态
+    function getOnlineStatus(isOnline) {
+      return isOnline 
+        ? '<span class="text-green-400 text-xs"><i class="fas fa-circle mr-1"></i>在线</span>'
+        : '<span class="text-gray-500 text-xs"><i class="fas fa-circle mr-1"></i>离线</span>';
     }
 
-    // 获取字体大小
-    function getFontSize(rank) {
-      if (rank <= 3) return 'text-2xl';
-      if (rank <= 6) return 'text-xl';
-      return 'text-lg';
+    // 数字动画
+    function animateNumber(element, start, end, duration = 1000) {
+      const startTime = performance.now();
+      
+      function updateNumber(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const current = Math.round(start + (end - start) * easeOutQuart);
+        
+        element.textContent = current.toLocaleString();
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateNumber);
+        }
+      }
+      
+      requestAnimationFrame(updateNumber);
     }
 
-    // 获取图标大小
-    function getIconSize(rank) {
-      if (rank <= 3) return 'text-4xl mr-5';
-      if (rank <= 6) return 'text-3xl mr-4';
-      return 'text-2xl mr-4';
+    // 更新统计信息
+    function updateStats() {
+      const totalPlayers = allPlayers.length;
+      const totalAmount = allPlayers.reduce((sum, player) => sum + player.amount, 0);
+      const avgAmount = Math.round(totalAmount / totalPlayers);
+      const onlinePlayers = allPlayers.filter(player => player.online).length;
+
+      // 使用动画更新数字
+      setTimeout(() => {
+        animateNumber(document.getElementById('totalPlayers'), 0, totalPlayers);
+        animateNumber(document.getElementById('totalAmount'), 0, totalAmount);
+        animateNumber(document.getElementById('avgAmount'), 0, avgAmount);
+        animateNumber(document.getElementById('onlinePlayers'), 0, onlinePlayers);
+      }, 500);
     }
 
-    // 生成排行榜HTML
+    // 生成排行榜
     function generateRankingList() {
       const rankingList = document.getElementById('rankingList');
+      const sortedPlayers = [...allPlayers].sort((a, b) => b.amount - a.amount);
+
       rankingList.innerHTML = '';
 
-      // 确保按amount排序并只显示前10名
-      const sortedPlayers = [...allPlayers]
-        .sort((a, b) => b.amount - a.amount)
-        .slice(0, 10);
-
       sortedPlayers.forEach((player, index) => {
-        const actualRank = index + 1; // 重新计算排名
-        const rankClass = getRankClass(actualRank);
-        const textColor = getTextColor(actualRank);
-        const fontSize = getFontSize(actualRank);
-        const iconSize = getIconSize(actualRank);
-        const amountFontSize = actualRank <= 3 ? 'text-3xl' : actualRank <= 6 ? 'text-2xl' : 'text-xl';
-        const padding = actualRank <= 6 ? 'p-6' : 'p-5';
-
+        const actualRank = index + 1;
+        const isTopThree = actualRank <= 3;
+        
         const playerHTML = `
-          <div class="glow-card ${rankClass} ${padding} rounded-xl flex justify-between items-center">
-            <div class="flex items-center">
-              <span class="${iconSize}">${getRankIcon(actualRank)}</span>
-              <div>
-                <div class="${fontSize} font-bold ${textColor}">#${actualRank} ${player.id}</div>
-                <div class="text-sm text-gray-400">${player.title}</div>
+          <div class="premium-card player-card p-6 transition-all duration-300" style="animation-delay: ${index * 100}ms">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center flex-1">
+                ${getRankBadge(actualRank, player.avatar)}
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="text-${isTopThree ? '2xl' : 'xl'} font-bold text-cyan-300">
+                      #${actualRank} ${player.id}
+                    </span>
+                    ${getOnlineStatus(player.online)}
+                  </div>
+                  <div class="flex items-center gap-4 text-sm text-gray-400">
+                    <span class="bg-purple-900/50 px-2 py-1 rounded-full text-purple-300">
+                      ${player.title}
+                    </span>
+                    <span class="bg-orange-900/50 px-2 py-1 rounded-full text-orange-300">
+                      ${player.vipLevel}
+                    </span>
+                    <span>最后活跃: ${player.lastActive}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-${isTopThree ? '3xl' : '2xl'} font-bold text-yellow-400 animated-number">
+                  ${player.amount.toLocaleString()}
+                </div>
+                <div class="text-sm text-gray-400">代氪额度</div>
               </div>
             </div>
-            <span class="${textColor} font-bold ${amountFontSize}">${player.amount} 元</span>
+            ${isTopThree ? '<div class="absolute top-2 right-2 text-yellow-400"><i class="fas fa-crown"></i></div>' : ''}
           </div>
         `;
 
         rankingList.innerHTML += playerHTML;
       });
+
+      updateStats();
     }
 
-    // 搜索玩家功能
+    // 搜索功能增强
     function searchPlayer() {
-      const input = document.getElementById('searchInput').value.toLowerCase();
+      const input = document.getElementById('searchInput').value.toLowerCase().trim();
       const resultDiv = document.getElementById('searchResult');
       
       if (input.length === 0) {
@@ -243,32 +726,58 @@
         return;
       }
       
-      const foundPlayer = allPlayers.find(player => 
-        player.id.toLowerCase().includes(input)
+      const foundPlayers = allPlayers.filter(player => 
+        player.id.toLowerCase().includes(input) || 
+        player.title.toLowerCase().includes(input)
       );
       
-      if (foundPlayer) {
-        // 重新计算实际排名
+      if (foundPlayers.length > 0) {
         const sortedPlayers = [...allPlayers].sort((a, b) => b.amount - a.amount);
-        const actualRank = sortedPlayers.findIndex(p => p.id === foundPlayer.id) + 1;
         
-        resultDiv.innerHTML = `
-          <div class="search-result p-5 rounded-xl flex justify-between items-center">
-            <div class="flex items-center">
-              <span class="text-2xl mr-4">🔍</span>
-              <div>
-                <div class="text-xl font-bold text-yellow-300">#${actualRank} ${foundPlayer.id}</div>
-                <div class="text-sm text-gray-400">${foundPlayer.title}</div>
+        let resultsHTML = foundPlayers.map(player => {
+          const actualRank = sortedPlayers.findIndex(p => p.id === player.id) + 1;
+          
+          return `
+            <div class="premium-card p-5 mb-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  ${getRankBadge(actualRank, player.avatar)}
+                  <div>
+                    <div class="text-xl font-bold text-yellow-300 mb-1">
+                      #${actualRank} ${player.id}
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                      <span class="text-purple-300">${player.title}</span>
+                      ${getOnlineStatus(player.online)}
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-yellow-300">
+                    ${player.amount.toLocaleString()}
+                  </div>
+                  <div class="text-sm text-gray-400">代氪额度</div>
+                </div>
               </div>
             </div>
-            <span class="text-yellow-300 font-bold text-xl">${foundPlayer.amount} 元</span>
+          `;
+        }).join('');
+        
+        resultDiv.innerHTML = `
+          <div class="mb-4">
+            <h3 class="text-lg font-bold text-cyan-300 mb-3">
+              <i class="fas fa-search mr-2"></i>搜索结果 (${foundPlayers.length}个)
+            </h3>
+            ${resultsHTML}
           </div>
         `;
         resultDiv.classList.remove('hidden');
       } else {
         resultDiv.innerHTML = `
-          <div class="search-result p-4 rounded-xl text-center">
-            <span class="text-red-300">❌ 未找到玩家 "${input}"</span>
+          <div class="premium-card p-6 text-center">
+            <i class="fas fa-search text-4xl text-gray-500 mb-3"></i>
+            <div class="text-red-300 font-bold">未找到匹配的玩家</div>
+            <div class="text-gray-400 text-sm mt-2">试试搜索其他关键词</div>
           </div>
         `;
         resultDiv.classList.remove('hidden');
@@ -281,10 +790,63 @@
       document.getElementById('searchResult').classList.add('hidden');
     }
 
-    // 页面加载时生成排行榜
+    // 刷新排行榜
+    function refreshRanking() {
+      const button = event.target.closest('button');
+      const icon = button.querySelector('i');
+      
+      icon.style.animation = 'spin 1s linear infinite';
+      
+      setTimeout(() => {
+        generateRankingList();
+        icon.style.animation = '';
+      }, 1000);
+    }
+
+    // 选择奖励
+    function selectReward(cost, item) {
+      const confirmMsg = `确认兑换 ${item}？\n需要消耗 ${cost.toLocaleString()} 代氪额度`;
+      
+      if (confirm(confirmMsg)) {
+        alert(`兑换成功！\n已获得：${item}\n消耗额度：${cost.toLocaleString()}`);
+      }
+    }
+
+    // 联系客服
+    function contactSupport() {
+      alert('客服联系方式：\nQQ：123456789\n微信：game_support\n在线时间：24小时');
+    }
+
+    // 页面加载完成后初始化
     document.addEventListener('DOMContentLoaded', function() {
-      generateRankingList();
+      createParticles();
+      
+      setTimeout(() => {
+        generateRankingList();
+      }, 800);
+
+      // 添加键盘快捷键
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'f') {
+          e.preventDefault();
+          document.getElementById('searchInput').focus();
+        }
+        if (e.key === 'Escape') {
+          clearSearch();
+        }
+      });
     });
+
+    // 定期更新在线状态（模拟）
+    setInterval(() => {
+      allPlayers.forEach(player => {
+        if (Math.random() < 0.1) {
+          player.online = !player.online;
+        }
+      });
+      updateStats();
+    }, 30000);
+
   </script>
 
 </body>
